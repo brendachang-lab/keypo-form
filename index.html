@@ -359,24 +359,11 @@ function validate(n){
   }
   if(n===3){
     const s=document.getElementById('sdate').value;show('e-sdate',s);setE('sdate',s);if(!s)ok=false;
-    const dur=document.querySelector('input[name="dur"]:checked');
-    const ed=document.getElementById('e-dur');if(ed)ed.classList.toggle('show',!dur);if(!dur)ok=false;
+    const e=document.getElementById('edate').value;show('e-edate',e);setE('edate',e);if(!e)ok=false;
   }
   return ok;
 }
 
-function styleDur(){
-  ['dur-2w','dur-1m'].forEach(id=>{
-    const el=document.getElementById(id);
-    const checked=el.querySelector('input').checked;
-    el.style.background=checked?'var(--accent-light)':'var(--bg)';
-    el.style.borderColor=checked?'var(--accent-mid)':'var(--border)';
-  });
-}
-function calcEndDate(){
-  const s=document.getElementById('sdate').value;
-  const dur=document.querySelector('input[name="dur"]:checked');
-  if(!s||!dur){document.getElementById('edate-display').style.display='none';return;}
   const start=new Date(s);
   const end=new Date(start);
   if(dur.value==='2w') end.setDate(end.getDate()+14);
