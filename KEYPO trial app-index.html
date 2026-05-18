@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KEYPO — Trial Account Application</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0f0f;--ink2:#555;--ink3:#999;
+  --bg:#fafaf8;--surface:#fff;--border:#e8e6e0;
+  --accent:#4338ca;--accent-light:#eef2ff;--accent-mid:#818cf8;
+  --success:#059669;--success-light:#ecfdf5;
+  --danger:#dc2626;
+  --r:10px;--font:'DM Sans',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+
+/* ── Header ── */
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.logo{width:36px;height:36px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:9px;color:#fff;letter-spacing:.04em;font-weight:500;line-height:1.2;text-align:center}
+.brand-name{font-size:15px;font-weight:500}
+.brand-sub{font-size:12px;color:var(--ink3)}
+h1{font-size:24px;font-weight:500;margin-bottom:6px}
+.subtitle{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:2rem}
+
+/* ── Progress ── */
+.progress{display:flex;align-items:center;margin-bottom:2rem}
+.pstep{display:flex;flex-direction:column;align-items:center;flex:1}
+.pdot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;color:var(--ink3);display:flex;align-items:center;justify-content:center;transition:.2s;z-index:1;position:relative}
+.pdot.act{background:var(--accent);border-color:var(--accent);color:#fff}
+.pdot.done{background:var(--success);border-color:var(--success);color:#fff}
+.plabel{font-size:10px;color:var(--ink3);margin-top:4px;text-align:center}
+.plabel.act{color:var(--accent);font-weight:500}
+.pline{flex:1;height:1px;background:var(--border);margin-bottom:20px;transition:.3s}
+.pline.done{background:var(--success)}
+
+/* ── Cards / Sections ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.sec-head{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:1rem;padding-bottom:8px;border-bottom:1px solid var(--border)}
+
+/* ── Fields ── */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.row1{margin-bottom:14px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;color:var(--ink2)}
+.req{color:var(--danger)}
+.hint{font-size:11px;color:var(--ink3)}
+.field input,.field select,.field textarea{font-family:var(--font);font-size:13px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);width:100%;transition:.15s;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent-mid);background:var(--surface);box-shadow:0 0 0 3px rgba(67,56,202,.08)}
+.field textarea{resize:vertical;min-height:72px}
+.field input.err{border-color:var(--danger)}
+.errtxt{font-size:11px;color:var(--danger);display:none}
+.errtxt.show{display:block}
+
+/* ── Chips ── */
+.chip-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;background:var(--bg);color:var(--ink2);transition:.15s;user-select:none}
+.chip input{display:none}
+.chip.on{background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent)}
+.chip:hover{border-color:var(--accent-mid)}
+
+/* ── Radio options ── */
+.roption{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border:1px solid var(--border);border-radius:8px;cursor:pointer;margin-bottom:8px;background:var(--bg);transition:.15s}
+.roption input{margin-top:2px;accent-color:var(--accent);flex-shrink:0}
+.rtxt{font-size:13px;color:var(--ink);line-height:1.5}
+.rsub{font-size:11px;color:var(--ink3);margin-top:2px}
+.roption.on{background:var(--accent-light);border-color:var(--accent-mid)}
+
+/* ── Limits grid ── */
+.limit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.limit-grid{grid-template-columns:1fr}}
+.limit-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px}
+.limit-label{font-size:11px;color:var(--ink3);margin-bottom:6px}
+.limit-item input{font-family:var(--font);font-size:15px;font-weight:500;color:var(--ink);border:none;background:transparent;width:100%;outline:none;padding:0}
+
+/* ── Review ── */
+.review-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.review-row:last-child{border:none}
+.rk{color:var(--ink2);flex-shrink:0;margin-right:12px}
+.rv{color:var(--ink);font-weight:500;text-align:right;word-break:break-word}
+
+/* ── Nav ── */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+.btn-back{padding:9px 18px;background:transparent;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;color:var(--ink2);cursor:pointer;transition:.15s}
+.btn-back:hover{background:var(--surface)}
+.btn-next{padding:10px 24px;background:var(--accent);border:none;border-radius:8px;font-family:var(--font);font-size:14px;font-weight:500;color:#fff;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.15s}
+.btn-next:hover{background:#3730a3}
+.btn-next:disabled{background:var(--ink3);cursor:not-allowed}
+
+/* ── Success ── */
+.success-wrap{text-align:center;padding:2.5rem 1rem}
+.success-ring{width:64px;height:64px;border-radius:50%;background:var(--success-light);border:2px solid var(--success);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:28px;color:var(--success)}
+.summary-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;text-align:left;margin:1.5rem 0}
+.copy-btn{padding:8px 18px;background:transparent;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s;margin:4px}
+.copy-btn:hover{background:var(--surface)}
+
+/* ── Spinner ── */
+.spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Panel ── */
+.panel{display:none}
+.panel.show{display:block}
+
+/* ── Config notice ── */
+.config-banner{background:#fef9c3;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:1.5rem;display:none}
+.config-banner.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── CONFIG NOTICE (shown if endpoint not set) ── -->
+  <div class="config-banner show" id="config-notice">
+    ⚠️ <strong>Setup required:</strong> Replace <code>YOUR_APPS_SCRIPT_URL</code> at the top of this file with your deployed Apps Script Web App URL.
+  </div>
+
+  <!-- ── Header ── -->
+  <div class="logo-row">
+    <div class="logo">KEY<br>PO</div>
+    <div>
+      <div class="brand-name">KEYPO Big Data</div>
+      <div class="brand-sub">Distributor / Partner Portal</div>
+    </div>
+  </div>
+  <h1>Trial Account Application</h1>
+  <p class="subtitle">Complete the form below to request a KEYPO trial account. All fields marked <span style="color:var(--danger)">*</span> are required. Your request will be reviewed within 1–2 business days.</p>
+
+  <!-- ── Progress ── -->
+  <div class="progress">
+    <div class="pstep"><div class="pdot act" id="pd0">1</div><div class="plabel act" id="pl0">Company</div></div>
+    <div class="pline" id="pln0"></div>
+    <div class="pstep"><div class="pdot" id="pd1">2</div><div class="plabel" id="pl1">Config</div></div>
+    <div class="pline" id="pln1"></div>
+    <div class="pstep"><div class="pdot" id="pd2">3</div><div class="plabel" id="pl2">Data</div></div>
+    <div class="pline" id="pln2"></div>
+    <div class="pstep"><div class="pdot" id="pd3">4</div><div class="plabel" id="pl3">Period</div></div>
+    <div class="pline" id="pln3"></div>
+    <div class="pstep"><div class="pdot" id="pd4">5</div><div class="plabel" id="pl4">Review</div></div>
+  </div>
+
+  <!-- ── Step 0: Company ── -->
+  <div class="panel show" id="p0">
+    <div class="card">
+      <div class="sec-head">Company information</div>
+      <div class="row2">
+        <div class="field">
+          <label>Company name <span class="req">*</span></label>
+          <input type="text" id="company" placeholder="e.g. Acme Ltd">
+          <div class="errtxt" id="e-company">Required</div>
+        </div>
+        <div class="field">
+          <label>Tax / Registration number</label>
+          <input type="text" id="taxid" placeholder="N/A for overseas companies">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Contact name <span class="req">*</span></label>
+          <input type="text" id="uname" placeholder="e.g. John Smith">
+          <div class="errtxt" id="e-uname">Required</div>
+        </div>
+        <div class="field">
+          <label>Email address <span class="req">*</span></label>
+          <input type="email" id="uemail" placeholder="e.g. john@company.com">
+          <div class="errtxt" id="e-uemail">Please enter a valid email</div>
+        </div>
+      </div>
+      <div class="row1">
+        <div class="field">
+          <label>Preferred username</label>
+          <input type="text" id="ulogin" placeholder="Leave blank — admin will assign">
+          <span class="hint">If no preference, the admin will set this on your behalf.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Step 1: Config ── -->
+  <div class="panel" id="p1">
+    <div class="card">
+      <div class="sec-head">Account numbers</div>
+      <div class="row2">
+        <div class="field">
+          <label>Number of accounts <span class="req">*</span></label>
+          <input type="number" id="accts" min="1" value="1">
+        </div>
+        <div class="field">
+          <label>Number of topics <span class="req">*</span></label>
+          <input type="number" id="topics" min="1" value="1">
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-head">Usage limits <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:6px">(defaults pre-filled — adjust if needed)</span></div>
+      <div class="limit-grid">
+        <div class="limit-item">
+          <div class="limit-label">Report downloads / month / account</div>
+          <input type="number" id="rptdl" value="30" min="0">
+        </div>
+        <div class="limit-item">
+          <div class="limit-label">Keyword edits</div>
+          <input type="text" id="kw" value="Unlimited">
+        </div>
+        <div class="limit-item">
+          <div class="limit-label">AI report gen. / day / account</div>
+          <input type="number" id="air" value="5" min="0">
+        </div>
+        <div class="limit-item">
+          <div class="limit-label">KEYPO Agent queries / day / account</div>
+          <input type="number" id="agq" value="5" min="0">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Step 2: Data ── -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <div class="sec-head">Database selection <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px">— select all that apply</span></div>
+      <div class="chip-wrap" id="dbchips">
+        <label class="chip"><input type="checkbox" value="Taiwan"> Taiwan</label>
+        <label class="chip"><input type="checkbox" value="Hong Kong"> Hong Kong</label>
+        <label class="chip"><input type="checkbox" value="Japan"> Japan</label>
+        <label class="chip"><input type="checkbox" value="UAE"> UAE</label>
+      </div>
+      <div class="errtxt show" id="e-db" style="display:none;margin-top:8px">Please select at least one database.</div>
+    </div>
+    <div class="card">
+      <div class="sec-head">Data sources</div>
+      <label class="roption" id="ro-full">
+        <input type="radio" name="src" value="Full coverage">
+        <div>
+          <div class="rtxt">Full coverage</div>
+          <div class="rsub">News · Social media · Forums · Blogs · Location reviews · App reviews</div>
+        </div>
+      </label>
+      <label class="roption" id="ro-std">
+        <input type="radio" name="src" value="Standard">
+        <div>
+          <div class="rtxt">Standard</div>
+          <div class="rsub">News · Social media · Forums · Blogs</div>
+        </div>
+      </label>
+      <div class="errtxt" id="e-src" style="margin-top:6px">Please select a data source option.</div>
+    </div>
+  </div>
+
+  <!-- ── Step 3: Period ── -->
+  <div class="panel" id="p3">
+    <div class="card">
+      <div class="sec-head">Trial period</div>
+      <div class="row2">
+        <div class="field">
+          <label>Start date <span class="req">*</span></label>
+          <input type="date" id="sdate">
+          <div class="errtxt" id="e-sdate">Required</div>
+        </div>
+        <div class="field">
+          <label>End date <span class="req">*</span></label>
+          <input type="date" id="edate">
+          <div class="errtxt" id="e-edate">Required</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-head">Notes</div>
+      <div class="field">
+        <textarea id="notes" placeholder="Required if this is a renewal or extension. Include any special requirements or context here."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Step 4: Review ── -->
+  <div class="panel" id="p4">
+    <div class="card">
+      <div class="sec-head">Review your application</div>
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:1rem">Please confirm all details before submitting. Click Back to make changes.</p>
+      <div id="review-rows"></div>
+    </div>
+  </div>
+
+  <!-- ── Step 5: Success ── -->
+  <div class="panel" id="p5">
+    <div class="success-wrap">
+      <div class="success-ring">✓</div>
+      <p style="font-size:18px;font-weight:500;margin-bottom:6px">Application submitted</p>
+      <p style="font-size:13px;color:var(--ink2);max-width:380px;margin:0 auto 1.5rem;line-height:1.7">
+        Your request has been saved to our records. We'll review it and follow up within 1–2 business days.
+      </p>
+      <div class="summary-box" id="final-rows"></div>
+      <div>
+        <button class="copy-btn" id="copybtn" onclick="doCopy()">&#128203; Copy summary</button>
+        <button class="copy-btn" onclick="doReset()">&#8635; New application</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Nav ── -->
+  <div class="nav" id="navbar">
+    <button class="btn-back" id="backbtn" onclick="goBack()" style="visibility:hidden">← Back</button>
+    <button class="btn-next" id="nextbtn" onclick="goNext()">Next →</button>
+  </div>
+
+</div>
+<script>
+// ─────────────────────────────────────────────────────────────
+// STEP 1: Replace this URL with your deployed Apps Script URL
+// ─────────────────────────────────────────────────────────────
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyPnx6Ir6zAMmWHSOZUUxQuNgdJ-kdkq-ZslKwpHHcNi9A1feDvGO-2OY4a8C92Rs-T/exec';
+
+let cur = 0;
+const labels = ['Company name','Tax/Reg number','Contact name','Email','Username','Accounts','Topics','Database(s)','Data sources','Report downloads/month','Keyword edits','AI reports/day','Agent queries/day','Start date','End date','Notes'];
+
+function getDBs(){return Array.from(document.querySelectorAll('#dbchips input:checked')).map(e=>e.value);}
+function getSrc(){const r=document.querySelector('input[name="src"]:checked');return r?r.value:'';}
+function getData(){
+  return {
+    company:document.getElementById('company').value.trim(),
+    taxid:document.getElementById('taxid').value.trim()||'N/A',
+    uname:document.getElementById('uname').value.trim(),
+    uemail:document.getElementById('uemail').value.trim(),
+    ulogin:document.getElementById('ulogin').value.trim()||'(Admin assigned)',
+    accts:document.getElementById('accts').value,
+    topics:document.getElementById('topics').value,
+    dbs:getDBs().join(', '),
+    src:getSrc(),
+    rptdl:document.getElementById('rptdl').value,
+    kw:document.getElementById('kw').value,
+    air:document.getElementById('air').value,
+    agq:document.getElementById('agq').value,
+    sdate:document.getElementById('sdate').value,
+    edate:document.getElementById('edate').value,
+    notes:document.getElementById('notes').value.trim()||'—',
+  };
+}
+function getVals(d){return[d.company,d.taxid,d.uname,d.uemail,d.ulogin,d.accts,d.topics,d.dbs,d.src,d.rptdl+' /month',d.kw,d.air+' /day',d.agq+' /day',d.sdate,d.edate,d.notes];}
+function buildReviewHTML(data){
+  const v=getVals(data);
+  return labels.map((l,i)=>`<div class="review-row"><span class="rk">${l}</span><span class="rv">${v[i]||'—'}</span></div>`).join('');
+}
+
+function validate(n){
+  let ok=true;
+  const show=(id,v)=>{const e=document.getElementById(id);if(e)e.classList.toggle('show',!v);};
+  const setE=(id,v)=>{const e=document.getElementById(id);if(e)e.classList.toggle('err',!v);};
+  if(n===0){
+    const c=document.getElementById('company').value.trim();show('e-company',c);setE('company',c);if(!c)ok=false;
+    const u=document.getElementById('uname').value.trim();show('e-uname',u);setE('uname',u);if(!u)ok=false;
+    const em=document.getElementById('uemail').value.trim();const ev=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);show('e-uemail',ev);setE('uemail',ev);if(!ev)ok=false;
+  }
+  if(n===2){
+    const dbs=getDBs();document.getElementById('e-db').style.display=dbs.length?'none':'block';if(!dbs.length)ok=false;
+    const src=getSrc();document.getElementById('e-src').classList.toggle('show',!src);if(!src)ok=false;
+  }
+  if(n===3){
+    const s=document.getElementById('sdate').value;show('e-sdate',s);setE('sdate',s);if(!s)ok=false;
+    const e=document.getElementById('edate').value;show('e-edate',e);setE('edate',e);if(!e)ok=false;
+  }
+  return ok;
+}
+
+function showStep(n){
+  for(let i=0;i<6;i++)document.getElementById('p'+i).classList.toggle('show',i===n);
+  for(let i=0;i<5;i++){
+    const d=document.getElementById('pd'+i),l=document.getElementById('pl'+i);
+    if(i<n){d.className='pdot done';d.textContent='✓';l.className='plabel';}
+    else if(i===n){d.className='pdot act';d.textContent=i+1;l.className='plabel act';}
+    else{d.className='pdot';d.textContent=i+1;l.className='plabel';}
+    if(i<4)document.getElementById('pln'+i).className='pline'+(i<n?' done':'');
+  }
+  const bb=document.getElementById('backbtn');
+  bb.style.visibility=(n===0||n===5)?'hidden':'visible';
+  const nb=document.getElementById('nextbtn');
+  if(n===5){document.getElementById('navbar').style.display='none';}
+  else{
+    document.getElementById('navbar').style.display='flex';
+    nb.innerHTML=n===4?'Submit ✓':'Next →';
+    nb.disabled=false;
+  }
+}
+
+async function goNext(){
+  if(!validate(cur))return;
+  if(cur===3){document.getElementById('review-rows').innerHTML=buildReviewHTML(getData());}
+  if(cur===4){
+    const nb=document.getElementById('nextbtn');
+    nb.disabled=true;
+    nb.innerHTML='<span class="spinner"></span> Submitting…';
+    const data=getData();
+    if(ENDPOINT==='YOUR_APPS_SCRIPT_URL'){
+      // Endpoint not configured — show success with copy fallback
+      document.getElementById('final-rows').innerHTML=buildReviewHTML(data);
+      cur=5;showStep(5);
+      return;
+    }
+    try{
+      await fetch(ENDPOINT,{method:'POST',body:JSON.stringify(data),headers:{'Content-Type':'text/plain'}});
+      document.getElementById('final-rows').innerHTML=buildReviewHTML(data);
+      cur=5;showStep(5);
+    }catch(err){
+      nb.disabled=false;
+      nb.innerHTML='Submit ✓';
+      alert('Submission failed: '+err.message+'\n\nPlease copy the summary and send manually.');
+      document.getElementById('final-rows').innerHTML=buildReviewHTML(data);
+      cur=5;showStep(5);
+    }
+    return;
+  }
+  cur++;showStep(cur);
+}
+function goBack(){if(cur>0){cur--;showStep(cur);}}
+
+function doCopy(){
+  const data=getData();const v=getVals(data);
+  const txt='KEYPO Trial Account Request\n'+'─'.repeat(36)+'\n'+labels.map((l,i)=>l.padEnd(28)+v[i]).join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.getElementById('copybtn');b.textContent='✓ Copied!';
+    setTimeout(()=>{b.textContent='📋 Copy summary';},2000);
+  });
+}
+function doReset(){
+  cur=0;
+  document.querySelectorAll('input[type=text],input[type=email],input[type=date],textarea').forEach(el=>el.value='');
+  document.getElementById('accts').value=1;document.getElementById('topics').value=1;
+  document.getElementById('rptdl').value=30;document.getElementById('air').value=5;document.getElementById('agq').value=5;
+  document.getElementById('kw').value='Unlimited';
+  document.querySelectorAll('input[type=checkbox],input[type=radio]').forEach(e=>e.checked=false);
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.roption').forEach(c=>c.classList.remove('on'));
+  document.getElementById('navbar').style.display='flex';
+  showStep(0);
+}
+
+// Chip & radio interactivity
+document.querySelectorAll('.chip').forEach(c=>{
+  c.querySelector('input').addEventListener('change',()=>c.classList.toggle('on',c.querySelector('input').checked));
+});
+document.querySelectorAll('.roption').forEach(c=>{
+  c.querySelector('input').addEventListener('change',()=>{
+    document.querySelectorAll('.roption').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+  });
+});
+
+// Hide config banner if endpoint is set
+if(ENDPOINT!=='YOUR_APPS_SCRIPT_URL')document.getElementById('config-notice').style.display='none';
+
+showStep(0);
+</script>
+</body>
+</html>
