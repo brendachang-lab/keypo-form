@@ -155,8 +155,8 @@ h1{font-size:24px;font-weight:500;margin-bottom:6px}
           <div class="errtxt" id="e-company">Required</div>
         </div>
         <div class="field">
-          <label>Tax / Registration number</label>
-          <input type="text" id="taxid" placeholder="N/A for overseas companies">
+          <label>Tax / Registration number <span style="font-size:11px;color:var(--ink3);font-weight:400">(Optional)</span></label>
+          <input type="text" id="taxid" placeholder="Optional — leave blank if not applicable">
         </div>
       </div>
       <div class="row2">
@@ -192,7 +192,7 @@ h1{font-size:24px;font-weight:500;margin-bottom:6px}
         </div>
         <div class="field">
           <label>Number of topics <span class="req">*</span></label>
-          <input type="number" id="topics" min="1" value="1">
+          <input type="number" id="topics" min="1" max="10" value="5">
         </div>
       </div>
     </div>
@@ -201,7 +201,7 @@ h1{font-size:24px;font-weight:500;margin-bottom:6px}
       <div class="limit-grid">
         <div class="limit-item">
           <div class="limit-label">Report downloads / month / account</div>
-          <input type="number" id="rptdl" value="30" min="0">
+          <input type="number" id="rptdl" value="30" min="0" max="30" readonly style="opacity:.6;cursor:not-allowed">
         </div>
         <div class="limit-item">
           <div class="limit-label">Keyword edits</div>
@@ -209,11 +209,11 @@ h1{font-size:24px;font-weight:500;margin-bottom:6px}
         </div>
         <div class="limit-item">
           <div class="limit-label">AI report gen. / day / account</div>
-          <input type="number" id="air" value="5" min="0">
+          <input type="number" id="air" value="5" min="0" max="5" readonly style="opacity:.6;cursor:not-allowed">
         </div>
         <div class="limit-item">
           <div class="limit-label">KEYPO Agent queries / day / account</div>
-          <input type="number" id="agq" value="5" min="0">
+          <input type="number" id="agq" value="5" min="1" max="10">
         </div>
       </div>
     </div>
@@ -226,7 +226,6 @@ h1{font-size:24px;font-weight:500;margin-bottom:6px}
       <div class="chip-wrap" id="dbchips">
         <label class="chip"><input type="checkbox" value="Taiwan"> Taiwan</label>
         <label class="chip"><input type="checkbox" value="Hong Kong"> Hong Kong</label>
-        <label class="chip"><input type="checkbox" value="Japan"> Japan</label>
         <label class="chip"><input type="checkbox" value="UAE"> UAE</label>
       </div>
       <div class="errtxt show" id="e-db" style="display:none;margin-top:8px">Please select at least one database.</div>
@@ -255,16 +254,34 @@ h1{font-size:24px;font-weight:500;margin-bottom:6px}
   <div class="panel" id="p3">
     <div class="card">
       <div class="sec-head">Trial period</div>
-      <div class="row2">
+      <div class="row1">
         <div class="field">
           <label>Start date <span class="req">*</span></label>
-          <input type="date" id="sdate">
+          <input type="date" id="sdate" oninput="calcEndDate()">
           <div class="errtxt" id="e-sdate">Required</div>
         </div>
+      </div>
+      <div class="row1">
         <div class="field">
-          <label>End date <span class="req">*</span></label>
-          <input type="date" id="edate">
-          <div class="errtxt" id="e-edate">Required</div>
+          <label>Trial duration <span class="req">*</span></label>
+          <div style="display:flex;gap:10px;margin-top:4px">
+            <label class="roption" id="dur-2w" style="flex:1;margin-bottom:0">
+              <input type="radio" name="dur" value="2w" onchange="calcEndDate()">
+              <div><div class="rtxt">2 weeks</div><div class="rsub">14 days</div></div>
+            </label>
+            <label class="roption" id="dur-1m" style="flex:1;margin-bottom:0">
+              <input type="radio" name="dur" value="1m" onchange="calcEndDate()">
+              <div><div class="rtxt">1 month</div><div class="rsub">30 days</div></div>
+            </label>
+          </div>
+          <div class="errtxt" id="e-dur" style="margin-top:6px">Please select a duration.</div>
+        </div>
+      </div>
+      <div class="row1" id="edate-display" style="display:none">
+        <div class="field">
+          <label>End date</label>
+          <input type="text" id="edate-txt" readonly style="opacity:.7;cursor:default">
+          <input type="hidden" id="edate">
         </div>
       </div>
     </div>
@@ -315,7 +332,7 @@ h1{font-size:24px;font-weight:500;margin-bottom:6px}
 const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxKb1SyBvN1NvBRkIosdbVT8hTwzLdf_o8wYPjRd8wUbcdCNOR3A8dnILQlKDVbz9jz/exec';
 
 let cur = 0;
-const labels = ['Company name','Tax/Reg number','Contact name','Email','Username','Accounts','Topics','Database(s)','Data sources','Report downloads/month','Keyword edits','AI reports/day','Agent queries/day','Start date','End date','Notes'];
+const labels = ['Company name','Tax/Reg number','Contact name','Email','Username','Accounts','Topics','Database(s)','Data sources','Report downloads/month','Keyword edits','AI reports/day','Agent queries/day','Start date','Duration','End date','Notes'];
 
 function getDBs(){return Array.from(document.querySelectorAll('#dbchips input:checked')).map(e=>e.value);}
 function getSrc(){const r=document.querySelector('input[name="src"]:checked');return r?r.value:'';}
@@ -335,11 +352,12 @@ function getData(){
     air:document.getElementById('air').value,
     agq:document.getElementById('agq').value,
     sdate:document.getElementById('sdate').value,
+    dur:(document.querySelector('input[name="dur"]:checked')||{}).value==='2w'?'2 weeks':'1 month',
     edate:document.getElementById('edate').value,
     notes:document.getElementById('notes').value.trim()||'—',
   };
 }
-function getVals(d){return[d.company,d.taxid,d.uname,d.uemail,d.ulogin,d.accts,d.topics,d.dbs,d.src,d.rptdl+' /month',d.kw,d.air+' /day',d.agq+' /day',d.sdate,d.edate,d.notes];}
+function getVals(d){return[d.company,d.taxid,d.uname,d.uemail,d.ulogin,d.accts,d.topics,d.dbs,d.src,d.rptdl+' /month',d.kw,d.air+' /day',d.agq+' /day',d.sdate,d.dur,d.edate,d.notes];}
 function buildReviewHTML(data){
   const v=getVals(data);
   return labels.map((l,i)=>`<div class="review-row"><span class="rk">${l}</span><span class="rv">${v[i]||'—'}</span></div>`).join('');
@@ -360,11 +378,25 @@ function validate(n){
   }
   if(n===3){
     const s=document.getElementById('sdate').value;show('e-sdate',s);setE('sdate',s);if(!s)ok=false;
-    const e=document.getElementById('edate').value;show('e-edate',e);setE('edate',e);if(!e)ok=false;
+    const dur=document.querySelector('input[name="dur"]:checked');
+    const ed=document.getElementById('e-dur');if(ed)ed.classList.toggle('show',!dur);if(!dur)ok=false;
   }
   return ok;
 }
 
+function calcEndDate(){
+  const s=document.getElementById('sdate').value;
+  const dur=document.querySelector('input[name="dur"]:checked');
+  if(!s||!dur){document.getElementById('edate-display').style.display='none';return;}
+  const start=new Date(s);
+  const end=new Date(start);
+  if(dur.value==='2w') end.setDate(end.getDate()+14);
+  else end.setDate(end.getDate()+30);
+  const fmt=end.toISOString().split('T')[0];
+  document.getElementById('edate').value=fmt;
+  document.getElementById('edate-txt').value=fmt;
+  document.getElementById('edate-display').style.display='block';
+}
 function showStep(n){
   for(let i=0;i<6;i++)document.getElementById('p'+i).classList.toggle('show',i===n);
   for(let i=0;i<5;i++){
@@ -430,7 +462,7 @@ function doReset(){
   document.getElementById('accts').value=1;document.getElementById('topics').value=1;
   document.getElementById('rptdl').value=30;document.getElementById('air').value=5;document.getElementById('agq').value=5;
   document.getElementById('kw').value='Unlimited';
-  document.querySelectorAll('input[type=checkbox],input[type=radio]').forEach(e=>e.checked=false);
+  document.querySelectorAll('input[type=checkbox],input[type=radio]').forEach(e=>e.checked=false);document.getElementById('edate-display').style.display='none';document.getElementById('edate').value='';document.getElementById('edate-txt').value='';
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
   document.querySelectorAll('.roption').forEach(c=>c.classList.remove('on'));
   document.getElementById('navbar').style.display='flex';
