@@ -303,7 +303,7 @@ h1{font-size:24px;font-weight:500;margin-bottom:6px}
 
 </div>
 <script>
-const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyw2pRJzgPF9XbgzEM1Qu0gg7M7Io4-FxpS6ftQEpk/exec';
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbx9QnemjN4ajfzMQILtUDiCtD_yPgT28pK7QhFkK40gChJF_Dm8DxH0fT8rYgI6GG7k/exec';
 let cur = 0;
 
 const LABELS = [
@@ -406,7 +406,7 @@ async function goNext(){
     nb.innerHTML='<span class="spinner"></span>Submitting…';
     const data = getData();
     try{
-      await fetch(ENDPOINT, {method:'POST', body:JSON.stringify(data), headers:{'Content-Type':'text/plain'}});
+      await fetch(ENDPOINT, {method:'POST', body:JSON.stringify(data), headers:{'Content-Type':'text/plain'}, mode:'no-cors'});
     }catch(e){ /* CORS fetch may throw but POST still succeeds */ }
     document.getElementById('final-rows').innerHTML = buildHTML(data);
     cur=5; showStep(5);
